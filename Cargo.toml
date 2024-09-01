@@ -1,0 +1,21 @@
+[package]
+name = "T-70"
+version = "0.1.0"
+edition = "2021"
+
+[profile.dev]
+strip = "symbols"
+panic = "abort"
+trim-path = true
+opt-level = 1
+lto = false
+
+[profile.release]
+strip = "symbols"
+panic = "abort"
+trim-path = true
+opt-level = 1
+lto = false
+
+[dependencies]
+opencv = {  version = "0.92.2" , default-features = true}
