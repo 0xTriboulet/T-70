@@ -12,7 +12,7 @@ fn main() -> Result<()> {
     // highgui::wait_key(3000)?;
 
     // Load mobilenet for face detection
-    let mut model = opencv::dnn::read_net_from_onnx("./models/mobilenetv2.onnx")
+    let mut model = opencv::dnn::read_net_from_onnx("./models/yolov5.onnx")
                                 .expect("Failed to load model");
 
     // Preprocess the frame for model input
