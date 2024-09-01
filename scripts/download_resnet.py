@@ -6,7 +6,7 @@ import tf2onnx
 base_model = ResNet50(weights='imagenet', include_top=False, pooling='avg')
 
 # Define the output path for the ONNX model
-onnx_model_path = '../models/resnet50_model.onnx'
+onnx_model_path = '../models/resnet50.onnx'
 
 # Convert the Keras model to ONNX
 spec = (tf.TensorSpec((None, 224, 224, 3), tf.float32, name="input"),)

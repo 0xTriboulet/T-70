@@ -4,8 +4,6 @@ version = "0.1.0"
 edition = "2021"
 
 [profile.dev]
-strip = "symbols"
-panic = "abort"
 trim-path = true
 opt-level = 1
 lto = false
