@@ -8,12 +8,7 @@ use opencv::prelude::*;
 use opencv::{highgui, imgcodecs, imgproc, objdetect, prelude::*, videoio, Result};
 use opencv::core::{Rect, Scalar, Size, Vector, CV_32F};
 
-
-
 fn main() -> Result<(), Box<dyn Error>>  {
-    const WINDOW: &str = "video capture";
-    highgui::named_window_def(WINDOW)?;
-
     // Include the Haar Cascade XML file in the binary at compile time
     const FACE_CASCADE_DATA: &[u8] = include_bytes!("../models/haarcascade_frontalface_default.xml");
 
@@ -61,8 +56,8 @@ fn main() -> Result<(), Box<dyn Error>>  {
             1.1,
             2,
             objdetect::CASCADE_SCALE_IMAGE,
-            opencv::core::Size::new(30, 30),
-            opencv::core::Size::new(180, 180),
+            Size::new(30, 30),
+            Size::new(180, 180),
         )?;
 
 
@@ -75,8 +70,8 @@ fn main() -> Result<(), Box<dyn Error>>  {
     for face in faces {
         imgproc::rectangle(
             &mut frame,
-            opencv::core::Rect::from(face),
-            opencv::core::Scalar::new(0.0, 255.0, 0.0, 0.0),
+            Rect::from(face),
+            Scalar::new(0.0, 255.0, 0.0, 0.0),
             1,
             8,
             0,
@@ -85,6 +80,11 @@ fn main() -> Result<(), Box<dyn Error>>  {
 
     // Save the image
     imwrite("./captured.jpeg", &frame, &Vector::new())?;
+
+    const WINDOW: &str = "video capture";
+    highgui::named_window_def(WINDOW)?;
+    highgui::imshow(WINDOW, &frame).expect("Failed!");
+    highgui::wait_key(0)?;
 
     Ok(())
 }
