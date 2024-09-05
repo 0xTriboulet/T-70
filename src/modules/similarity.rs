@@ -1,5 +1,17 @@
 use opencv::core::Vector;
+use opencv::Error;
 
+pub fn calculate_similarity(embeddings: &Vec<Vector<f32>>) -> Result<f32, Error> {
+    if embeddings.len() >= 2 {
+        let similarity = calculate_cosine_similarity(&embeddings[1], &embeddings[0]);
+
+        Ok(similarity) // Return the similarity wrapped in Ok(f32)
+    } else {
+        Err(Error::new(opencv::core::StsError, "Not enough embeddings to compare")) // Return an error if there are not enough embeddings
+    }
+}
+
+#[allow(dead_code)]
 pub fn calculate_mse(embedding1: &Vector<f32>, embedding2: &Vector<f32>) -> f32 {
     if embedding1.len() != embedding2.len() {
         panic!("Embeddings must have the same length for MSE calculation");

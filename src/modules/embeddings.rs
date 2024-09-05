@@ -10,11 +10,10 @@ pub fn extract_embedding(input_blob: &mut Mat) -> Result<Vector<f32>> {
 
     let mut net = match read_net_from_onnx_buffer(&model_data_vector) {
         Ok(net) => {
-            println!("ONNX model loaded successfully!");
             net
         },
         Err(e) => {
-            println!("Failed to load ONNX model: {:?}", e);
+            println!("[-] Failed to load ONNX model: {:?}", e);
             return Err(e);
         }
     };
@@ -25,7 +24,7 @@ pub fn extract_embedding(input_blob: &mut Mat) -> Result<Vector<f32>> {
     let data = output.data_typed::<f32>()?;
 
     let embedding: Vector<f32> = data.iter().cloned().collect();
-    println!("Extracted embeddings from image!");
+    println!("[+] Extracted embeddings from image!");
 
     Ok(embedding)
 }

@@ -1,2 +1,5 @@
-pub(crate) mod  similarity;
-pub(crate) mod embeddings;
+pub mod  similarity;
+pub mod embeddings;
+pub mod camera;
+pub mod classifier;
+pub mod face_detection;

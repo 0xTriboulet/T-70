@@ -17,3 +17,6 @@ lto = false
 
 [dependencies]
 opencv = {  version = "0.92.2" , default-features = true}
+
+[build-dependencies]
+cc = "1.1.15"
