@@ -3,27 +3,20 @@ use std::error::Error;
 use std::fs::File;
 use std::io::Write;
 use opencv::imgcodecs::imwrite;
-use opencv::core::find_file_def;
+use opencv::core::{find_file_def, FileStorage, FileStorage_Mode};
 use opencv::prelude::*;
 use opencv::{highgui, imgcodecs, imgproc, objdetect, prelude::*, videoio, Result};
 use opencv::core::{Rect, Scalar, Size, Vector, CV_32F};
+use opencv::objdetect::CascadeClassifier;
 
 fn main() -> Result<(), Box<dyn Error>>  {
     // Include the Haar Cascade XML file in the binary at compile time
-    const FACE_CASCADE_DATA: &[u8] = include_bytes!("../models/haarcascade_frontalface_default.xml");
+    // const FACE_CASCADE_DATA: &[u8] = include_bytes!("../models/haarcascade_frontalface_default.xml");
 
-    // Write the embedded XML data to a temporary file
-    let mut temp_path = temp_dir();
-    temp_path.push("haarcascade_frontalface_default.xml");
-
-    let mut file = File::create(&temp_path)
-        .expect("Failed to create temporary file for Haar Cascade classifier");
-
-    file.write_all(FACE_CASCADE_DATA)
-        .expect("Failed to write Haar Cascade data to temporary file");
-
-    // Load the Haar Cascade classifier from the temporary file
-    let mut face_classifier = objdetect::CascadeClassifier::new(temp_path.to_str().unwrap())?;
+    let xml = include_str!("../models/haarcascade_frontalface_default.xml");
+    let storage = FileStorage::new_def(xml, i32::from(FileStorage_Mode::READ) | i32::from(FileStorage_Mode::MEMORY))?;
+    let mut face_classifier = CascadeClassifier::default()?;
+    face_classifier.read(&storage.get_first_top_level_node()?)?;
 
     let mut cam = videoio::VideoCapture::new(0, videoio::CAP_ANY)?;
     if !cam.is_opened()? {
