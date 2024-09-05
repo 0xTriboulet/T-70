@@ -1,3 +1,5 @@
+#![no_main]
+
 use std::error::Error;
 use opencv::Result;
 
@@ -17,7 +19,7 @@ extern "C" {
 
 }
 
-
+#[no_mangle]
 fn main() -> Result<(), Box<dyn Error>> {
 
     let mut user_count: u32 = 0;
