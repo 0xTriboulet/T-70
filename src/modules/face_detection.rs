@@ -31,7 +31,7 @@ pub fn detect_faces(
             2,
             objdetect::CASCADE_SCALE_IMAGE,
             Size::new(300, 300),
-            Size::new(2000, 2000),
+            Size::new(4000, 4000),
         )?;
 
         if faces.len() > 0 {

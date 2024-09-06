@@ -1,6 +1,7 @@
 #![no_main]
 
 use std::error::Error;
+use opencv::prelude::VideoCaptureTrait;
 use opencv::Result;
 
 mod modules; // Import the modules
@@ -57,6 +58,9 @@ fn main() -> Result<(), Box<dyn Error>> {
 
     // Detect faces in the live video feed
     detect_faces(&mut cam, &mut face_classifier, &mut frame, &mut embeddings)?;
+
+    // Turn camera off
+    cam.release().expect("[-] Failed to close camera!");
 
     // Process the reference image and detect faces
     process_reference_image(&mut face_classifier, &mut embeddings)?;
