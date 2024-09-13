@@ -9,11 +9,14 @@ opt-level = 1
 lto = false
 
 [profile.release]
+incremental = false
 strip = "symbols"
 panic = "abort"
 trim-path = true
-opt-level = 1
+opt-level = "s"
 lto = false
+overflow-checks = false
+debug-assertions = false
 
 [dependencies]
 opencv = {  version = "0.92.2" , default-features = true}
