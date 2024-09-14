@@ -1,8 +1,7 @@
 use alloc::boxed::Box;
 use alloc::vec::Vec;
-use core::error::Error;
 use opencv::core::CV_32F;
-use opencv::objdetect;
+use opencv::{highgui, objdetect};
 use opencv::{core::{Rect, Scalar, Size, Vector, Mat}, dnn::blob_from_image, imgproc, objdetect::CascadeClassifier, videoio, Result};
 use opencv::objdetect::CascadeClassifierTrait;
 use crate::modules::embeddings::extract_embedding;
@@ -14,7 +13,7 @@ pub fn detect_faces(
     face_classifier: &mut CascadeClassifier,
     frame: &mut Mat,
     embeddings: &mut Vec<Vector<f32>>,
-) -> Result<(), Box<dyn Error>> {
+) -> std::result::Result<(), Box<dyn std::error::Error>> {
     let mut faces = Vector::new();
 
     loop {
@@ -23,17 +22,15 @@ pub fn detect_faces(
             return Err("Failed to get picture".into());
         }
 
-        let mut gray_frame = Mat::default();
-        imgproc::cvt_color(frame, &mut gray_frame, imgproc::COLOR_BGR2GRAY, 0)?;
 
         face_classifier.detect_multi_scale(
-            &gray_frame,
+            frame,
             &mut faces,
             1.1,
             2,
             objdetect::CASCADE_SCALE_IMAGE,
+            Size::new(30, 30),
             Size::new(300, 300),
-            Size::new(4000, 4000),
         )?;
 
         if faces.len() > 0 {
@@ -60,6 +57,10 @@ pub fn detect_faces(
         )?;
 
         embeddings.push(extract_embedding(&mut blob)?);
+
+        // Show the detected face in a dedicated window
+        highgui::imshow("Detected Face", &resized_face)?;
+        highgui::wait_key(5000)?; // Wait for 5000 milliseconds (5 seconds)
     }
 
     Ok(())
@@ -74,18 +75,15 @@ pub fn process_reference_image(
     const REFERENCE_IMAGE_DATA: &[u8] = include_bytes!("../../images/reference_image.png");
     let reference_image = imgcodecs::imdecode(&Vector::from_slice(REFERENCE_IMAGE_DATA), imgcodecs::IMREAD_COLOR)?;
 
-    let mut gray_reference_image = Mat::default();
-    imgproc::cvt_color(&reference_image, &mut gray_reference_image, imgproc::COLOR_BGR2GRAY, 0)?;
-
     let mut reference_faces = Vector::new();
     face_classifier.detect_multi_scale(
-        &gray_reference_image,
+        &reference_image,
         &mut reference_faces,
         1.1,
         2,
         objdetect::CASCADE_SCALE_IMAGE,
-        Size::new(30, 30),
-        Size::new(180, 180),
+        Size::new(100, 100),
+        Size::new(1000, 1000),
     )?;
 
     for reference_face in reference_faces {
@@ -106,6 +104,10 @@ pub fn process_reference_image(
         )?;
 
         embeddings.push(extract_embedding(&mut blob)?);
+
+        // Show the reference face in its own window
+        highgui::imshow("Reference Face", &resized_reference_face)?;
+        highgui::wait_key(5000)?; // Wait for 5000 milliseconds (5 seconds)
     }
 
     Ok(())
