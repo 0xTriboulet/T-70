@@ -47,7 +47,7 @@ cargo build --release
 After building the project, you can run the executable to start the face detection and verification process:
 
 ```bash
-./target/release/t70
+./target/release/T-70.exe
 ```
 
 ## Special Thanks
